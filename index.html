@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>RPG</title>
+        <style>
+			.game {
+				font-size: 22pt;
+				margin-left: 20%;
+				margin-right: 20%;
+				color: white;
+			}
+			.start {
+				font-weight: bold;
+			}
+			.speak {
+				font-style: italic;
+			}
+			.title {
+				color: red;
+				text-align: center;
+				text-indent: 0px;
+			}
+			body{
+				text-indent: 10%;
+				background-color: #3e3e3e;
+				text-align: justify;
+			}
+		</style>
+	    <script>
+	    	window.startup = function(){
+			    angular.module('RpgWebApp', []).controller('RpgWebController', function($scope) {
+			    	var updateLoggedState = function(){
+		    			$scope.isUserLoggedIn = gapi.auth2.getAuthInstance().isSignedIn.get();
+			    	}
+			    	var updateHeroStatus = function(){
+
+			    	}
+		    		gapi.auth2.getAuthInstance().isSignedIn.listen(function(par){
+		    			updateLoggedState();
+		    			$scope.$apply();
+		    		});
+			    	updateLoggedState();
+			        $scope.onSignIn = function(data){
+			            $scope.user = data;
+			        }
+			        $scope.signOut = function(){
+			            var auth2 = gapi.auth2.getAuthInstance();
+			            auth2.signOut().then(function () {
+			                $scope.user = null;
+			            });
+			        }
+
+			    });
+			    angular.element(document).ready(function() {
+				    angular.bootstrap(document, ["RpgWebApp"]);
+				});
+			}
+	    </script>
+        <script src="https://apis.google.com/js/platform.js?onload=startup"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.5/angular.js"></script>
+        <meta name="google-signin-client_id" content="818967173685-f7r2jb3r4dc82p7lefklnm07nbnkjn4n.apps.googleusercontent.com">
+    </head>
+    <body ng-controller="RpgWebController">
+        <div ng-show="!isUserLoggedIn" class="g-signin2" data-onsuccess="onSignIn"></div>
+        <div class="game" ng-show="isUserLoggedIn">
+	    	<div>
+		        <a ng-show="isUserLoggedIn" href="#" ng-click="signOut()">Sign out</a>
+	        </div>
+        	<h1 class="title">O Tesouro da Montanha</h1>
+        	<p class="start">A torre do mago Saralasha fica às margens de um bosque. Na cidade, o ancião é conhecido tanto por sua sabedoria quanto por sua reclusão, por isso deve haver um bom motivo para ele tê-lo chamado à sua presença. Ao chegar diante da pesada porta de carvalho, você toca um sino pendurado numa viga. Depois de um minuto, Saralasha o recepciona e o conduz pela escadaria em espiral até um aposento no alto da torre de pedra.</p>
+        	<p class="speak">	&mdash; Eu o chamei aqui para lhe oferecer a chance de fazer fortuna. Há uma caverna inexplorada na Montanha Adormecida, cuja entrada encontrei já poucos dias usando a visão dos pássaros. Escrituras antigas dizem que o local guarda um tesouro magnífico, entre o qual está o Tomo Púrpura, um livro de segredos arcanos. Se você o trouxer para mim, o resto do tesouro é seu.<p>
+        	<p>Imaginando as riquezas que poderá encontrar, você aceita a oferta do mago. Saralasha lhe entrega um pergaminho com um mapa da localização da caverna e lhe dá uma tocha, uma corda e uma poção de cura.</p>
+        	<p class="speak">	&mdash; Assim que estiver com o livro, concentre-se em meu nome e irei ajudá-lo a retornar em segurança &mdash; garante o mago.
+        	<p>Na manhã seguinte você veste sua armadura, apanha sua espada e parte. Um dia depois, você chega aos pés da Montanha Adormecida.</p>
+        	<p>Seu primeiro desafio é uma grande parede de rochas salientes, uma subida vertical de vinte metros. A entrada da caverna inexplorada deve estar em um platô no alto desta formação. Você pode usar a corda para subir ou gastar um tempo contornando a montanha e conhecendo seu entorno.
+        </div>
+    </body>
+</html>
