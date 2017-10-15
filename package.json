@@ -1,0 +1,22 @@
+{
+  "name": "rpgweb",
+  "version": "0.0.1",
+  "description": "rpgweb",
+  "main": "server.js",
+  "dependencies": {
+    "ejs": "^2.4.1",
+    "express": "^4.13.4"
+  },
+  "engine": {
+    "node": "*",
+    "npm": "*"
+  },
+  "scripts": {
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/caiohcoutinho/rpgweb.git"
+  },
+  "author": "Caio Coutinho <caiohcoutinho@gmail.com>"
+}
