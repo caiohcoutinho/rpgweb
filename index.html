@@ -26,16 +26,36 @@
 				background-color: #3e3e3e;
 				text-align: justify;
 			}
+			.life{
+				float: right;
+			}
+			.chapter{
+				color: blue;
+			}
+			.answers{
+				font-size: 16pt;
+				line-height: 30%;
+				color: orange;
+			}
 		</style>
 	    <script>
 	    	window.startup = function(){
-			    angular.module('RpgWebApp', []).controller('RpgWebController', function($scope) {
+			    angular.module('RpgWebApp', []).controller('RpgWebController', function($scope, $http) {
 			    	var updateLoggedState = function(){
 		    			$scope.isUserLoggedIn = gapi.auth2.getAuthInstance().isSignedIn.get();
 			    	}
-			    	var updateHeroStatus = function(){
-
-			    	}
+		    		$http.get("/hero").then(function(res){
+		    			var status = res.data;
+		    			$scope.life = status.life;
+		    			$scope.itens = _.sortBy(status.itens);
+		    		}, function(){
+		    			alert("erro");
+		    		});
+		    		$http.get("/answers").then(function(res){
+		    			$scope.answers = _.sortBy(res.data, "index");
+		    		}, function(){
+		    			alert("erro");
+		    		});
 		    		gapi.auth2.getAuthInstance().isSignedIn.listen(function(par){
 		    			updateLoggedState();
 		    			$scope.$apply();
@@ -50,7 +70,21 @@
 			                $scope.user = null;
 			            });
 			        }
-
+			        $scope.checkAnswer0 = function(playerName){
+			        	var answers = $scope.answers;
+			        	if(_.isNull(answers) || _.isUndefined(answers)){
+			        		return null;
+			        	}
+			        	var answer = answers[0];
+			        	if(_.isNull(answer) || _.isUndefined(answer)){
+			        		return null;
+			        	}
+			        	var playerAnswer = answer[playerName];
+			        	if(_.isNull(playerAnswer) || _.isUndefined(playerAnswer)){
+			        		return null;
+			        	}
+			        	return playerAnswer;
+			        }
 			    });
 			    angular.element(document).ready(function() {
 				    angular.bootstrap(document, ["RpgWebApp"]);
@@ -69,12 +103,21 @@
 		        <a ng-show="isUserLoggedIn" href="#" ng-click="signOut()">Sign out</a>
 	        </div>
         	<h1 class="title">O Tesouro da Montanha</h1>
+        	<h5 class="title">por Athos Beuren e arte de Ricardo Mango</h5>
         	<p class="start">A torre do mago Saralasha fica às margens de um bosque. Na cidade, o ancião é conhecido tanto por sua sabedoria quanto por sua reclusão, por isso deve haver um bom motivo para ele tê-lo chamado à sua presença. Ao chegar diante da pesada porta de carvalho, você toca um sino pendurado numa viga. Depois de um minuto, Saralasha o recepciona e o conduz pela escadaria em espiral até um aposento no alto da torre de pedra.</p>
         	<p class="speak">	&mdash; Eu o chamei aqui para lhe oferecer a chance de fazer fortuna. Há uma caverna inexplorada na Montanha Adormecida, cuja entrada encontrei já poucos dias usando a visão dos pássaros. Escrituras antigas dizem que o local guarda um tesouro magnífico, entre o qual está o Tomo Púrpura, um livro de segredos arcanos. Se você o trouxer para mim, o resto do tesouro é seu.<p>
         	<p>Imaginando as riquezas que poderá encontrar, você aceita a oferta do mago. Saralasha lhe entrega um pergaminho com um mapa da localização da caverna e lhe dá uma tocha, uma corda e uma poção de cura.</p>
         	<p class="speak">	&mdash; Assim que estiver com o livro, concentre-se em meu nome e irei ajudá-lo a retornar em segurança &mdash; garante o mago.
         	<p>Na manhã seguinte você veste sua armadura, apanha sua espada e parte. Um dia depois, você chega aos pés da Montanha Adormecida.</p>
-        	<p>Seu primeiro desafio é uma grande parede de rochas salientes, uma subida vertical de vinte metros. A entrada da caverna inexplorada deve estar em um platô no alto desta formação. Você pode usar a corda para subir ou gastar um tempo contornando a montanha e conhecendo seu entorno.
+        	<p><span class="chapter">(1)</span> Seu primeiro desafio é uma grande parede de rochas salientes, uma subida vertical de vinte metros. A entrada da caverna inexplorada deve estar em um platô no alto desta formação. Você pode usar a corda para subir ou gastar um tempo contornando a montanha e conhecendo seu entorno.</p>
+        	<div class="answers">
+        		<p ng-repeat="player in ['Augusto', 'Caio', 'Felipe', 'Lucas']">
+        		{{player}} <span ng-if="checkAnswer0(player)==null">ainda não decidiu.</span><span ng-if="checkAnswer0(player)==0">votou por subir a pedra usando a corda.</span><span ng-if="checkAnswer0(player)==1">votou por gastar um tempo para contornar a montanha e conhecer seu entorno.</span></span>
+        	</div>
+        	<hr/>
+        	<div class="status">
+        		<p class="itens">Itens: <span ng-repeat="iten in itens"><span ng-if="!$first && !$last">, </span><span ng-if="$last"> e </span>{{iten}}</span><span class="life"><image src="heart.png"></image> {{life}}</span></p>
+        	</div>
         </div>
     </body>
 </html>
