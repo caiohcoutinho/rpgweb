@@ -2,11 +2,18 @@
 var express = require('express'),
     app     = express(),
     path    = require("path"),
+    bodyParser = require('body-parser'),
     fs = require('fs'),
     _ = require("underscore"),
     MongoClient = require('mongodb').MongoClient;
 
 var url = "mongodb://rpgweb:zJeC5bJ7NTSs@ds119091.mlab.com:19091/rpgweb";
+
+app.use( bodyParser.json() );       // to support JSON-encoded bodies
+app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
+  extended: true
+}));
+app.use(express.json());
     
 app.engine('html', require('ejs').renderFile);
 
@@ -35,6 +42,22 @@ app.get('/hero', function(req, res){
 	});
 });
 
+app.get('/user', function(req, res){
+    var email = req.query.user;
+    res.setHeader('Content-Type', 'application/json');
+    var user = "invalid";
+    if(email == 'caiohcoutinho@gmail.com'){
+    	user = "Caio";
+    }
+    if(email == "augustosarao@gmail.com"){
+    	user = "Augusto";
+    }
+    if(email == "fgusmao230@gmail.com"){
+    	user = "Felipe";
+    }
+    res.send(JSON.stringify({user: user}));
+});
+
 app.get('/answers', function(req, res){
     res.setHeader('Content-Type', 'application/json');
 	MongoClient.connect(url, function(err, db) {
@@ -46,6 +69,27 @@ app.get('/answers', function(req, res){
 	});
 });
 
+app.post('/answers', function(req, res){
+    res.setHeader('Content-Type', 'application/json');
+    var update = {};
+    update[req.body.user] = req.body.answer;
+    update.index = req.body.chapter;
+	MongoClient.connect(url, function(err, db) {
+  		db.collection('answers').update(
+  			{
+  				index: { $eq: req.body.chapter }
+  			},
+  			update,
+  			{
+  				upsert: true,
+  			},
+  			function(){
+  				db.close();
+  				res.send("success");
+  			}
+  		);
+	});
+});
 
 // error handling
 app.use(function(err, req, res, next){
