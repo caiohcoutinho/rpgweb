@@ -54,6 +54,9 @@ app.get('/user', function(req, res){
     if(email == "fgusmao230@gmail.com"){
     	user = "Felipe";
     }
+    if (email == "lucasaries00@gmail.com"){
+	    user = "Lucas";
+    }
     res.send(JSON.stringify({user: user}));
 });
 
